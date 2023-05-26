@@ -26,16 +26,11 @@ void loop() {
   // DEBUG per identificare se la porta è chiusa
   // if (reedState == LOW){
   //   Serial.println("====================");
-  //   Serial.print("alarm          ");
-  //   Serial.println(alarmState);
-  //   Serial.print("reed          ");
-  //   Serial.println(reedState);
-  //   Serial.print("button        ");
-  //   Serial.println(buttonState);
-  //   Serial.print("last button   ");
-  //   Serial.println(lastButtonState);
-  //   Serial.print("====================");
-  //   Serial.println();
+  //   Serial.print((String)"alarm          " + alarmState);
+  //   Serial.print((String)"reed           " + reedState);
+  //   Serial.print((String)"button         " + buttonState);
+  //   Serial.print((String)"last button    " + lastButtonState);
+  //   Serial.println("====================");
   //   delay(100);
   // }
 
