@@ -51,12 +51,8 @@ void loop(){
   print_humidity(humidity);
   print_temperature(temperature);
   
-  Serial.println((String)"Humidity: " + humidity + " %");
-  // Serial.print(humidity);
-  // Serial.print(" %");
-  Serial.println((String)"Temperature: " + temperature + " C");
-  // Serial.print(temperature);
-  // Serial.println(" C");
+  Serial.println((String)"💧 Humidity: " + humidity + " %");
+  Serial.println((String)"🌡 Temperature: " + temperature + " C");
 
   delay(2000); // delay di 2 sec
 }
@@ -110,13 +106,13 @@ float get_temperature(void){
 
   // check di cambi accidentali dei dati digitali
   if ( OneWire::crc8(address, 7) != address[7]) { // check del CRC code
-    Serial.println("CRC is not valid!");
+    Serial.println("CRC non valido!");
     return 1;
   }
 
   // filtro della famiglia del sensore
   if ( address[0] != 0x10 && address[0] != 0x28) { // check della famiglia del sensore
-    Serial.print("Device is not recognized");
+    Serial.println("Dispositivo non riconosciuto");
     return 1;
   }
 
