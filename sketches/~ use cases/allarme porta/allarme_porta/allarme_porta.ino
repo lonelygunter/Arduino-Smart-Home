@@ -2,11 +2,13 @@
 #define REED_PIN 2 // pin dell'ampollina reed
 #define BUZZER_PIN 3 // pin del buzzer
 
+// VARIABILI:
 int buttonState; // stato del pulsante
 int lastButtonState; // stato precedente del pulsante
 int reedState = LOW; // stato dell'ampollina reed (LOW=porta chiusa, HIGH=porta aperta)
 int alarmState = LOW; // stato dell'allarme (LOW=spento, HIGH=attivo)
 int continuedAlarm = LOW; // stato dell'allarme continuato
+
 
 void setup() {
 
