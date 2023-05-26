@@ -15,18 +15,17 @@
 #define LCD_COL 16 // # colonne LCD I2C
 #define LCD_ROW 2 // # righe LCD I2C
 
-
-// METODI:
-float get_temperature(void);
-void print_humidity(float humidity);
-void print_temperature(float temperature);
-
 // VARIABILI:
 float humidity;
 float temperature;
 LiquidCrystal_I2C lcd(0x27, LCD_COL, LCD_ROW); // display LCD I2C con 16 colonne and 2 righe
 DHT dht(DHT_PIN, DHT_TYPE); // sensore DHT11 per l'umidità
 OneWire ds(DS_PIN); // sensore 18B20
+
+// METODI:
+void print_humidity(float humidity); // metodo per il print dell'umidità sul display LCD
+void print_temperature(float temperature); // metodo per il print della temperatura sul display LCD
+float get_temperature(void); // metodo per leggere temperatura dal DS18B20
 
 
 void setup(){
@@ -56,6 +55,7 @@ void loop(){
 
   delay(2000); // delay di 2 sec
 }
+
 
 // METODI CUSTOM:
 
