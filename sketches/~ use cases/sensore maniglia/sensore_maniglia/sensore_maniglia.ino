@@ -3,6 +3,7 @@
 // VARIABILI:
 int switchState = LOW; // stato del sensore
 
+
 void setup() {
 
   Serial.begin(9600);
