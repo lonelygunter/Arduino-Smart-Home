@@ -32,6 +32,7 @@ void setup() {
   pinMode(MIC_PIN, INPUT);
   pinMode(SWITCHPIN, INPUT_PULLUP);
   attachInterrupt(0, sound_check, RISING); // set di interrupt esterni
+  psw_setup(); // setup dei pin delle funzioni di password
 }
 
 void loop() {
@@ -52,7 +53,10 @@ void loop() {
 
   lastButtonState = buttonState; // set del vecchio stato del pulsante
 
-  delay(1000);
+  // delay(1000);
+  
+  psw_manager();
+  
 }
 
 

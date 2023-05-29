@@ -25,7 +25,7 @@ int insert = LOW; // per capire se è stato catturato un input
 char psw_chars[16] = "0123456789abcdef"; // whitelist dei caratteri utilizzabili nella password
 int psw_chars_size = sizeof(psw_chars)-1; // setup array size - 1 sennò fa buffer overflow
 
-String right_psw = "1234"; // setting password giusta
+String right_psw = "0000"; // setting password giusta
 String inserted_psw = "0000"; // inizializzazione password che verrà inserita dall'utente
 
 byte enter[8] = { // array del tasto enter
@@ -173,6 +173,7 @@ void writePsw(void){
 void checkPsw(void){
   if (inserted_psw == right_psw){
     lcd.print("RIGHT"); // password giusta
+    alarmState = HIGH;
   } else {
     lcd.print("WRONG"); // password sbagliata
     delay(1000);
