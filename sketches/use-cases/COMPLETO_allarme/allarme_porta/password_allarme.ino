@@ -48,7 +48,7 @@ void continuosArray(void); // metodo per iterare sempre i valori sull'array
 void frameRange(void); // metodo per non far oltrepassare un custom frame nel display
 
 
-void setup(){
+void psw_setup(){
 
   Serial.begin(9600);
 
@@ -64,7 +64,7 @@ void setup(){
 }
 
 
-void loop(){
+void psw_manager(){
 
   int x = analogRead(JS_X); // lettura dell'asse X del joystick
   int y = analogRead(JS_Y); // lettura dell'asse Y del joystick
