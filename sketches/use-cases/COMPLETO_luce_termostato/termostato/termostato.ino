@@ -2,8 +2,10 @@
 #include <LiquidCrystal_I2C.h>
 #include <OneWire.h>
 
+#define RELAY_PIN 2 // pin del relay
 #define DS_PIN 3 // pin del DS18B20
-#define DHT_PIN 2 // pin del DHT11
+#define DHT_PIN 4 // pin del DHT11
+#define LED_PIN 7 // pin del led
 
 #define DHT_TYPE DHT11 // tipo del DHT11
 #define HUM_MIN 30 // valore minimo di umidità
@@ -18,6 +20,7 @@
 // VARIABILI:
 float humidity;
 float temperature;
+int counter = 0;
 LiquidCrystal_I2C lcd(0x27, LCD_COL, LCD_ROW); // display LCD I2C con 16 colonne and 2 righe
 DHT dht(DHT_PIN, DHT_TYPE); // sensore DHT11 per l'umidità
 OneWire ds(DS_PIN); // sensore 18B20
@@ -32,15 +35,33 @@ void setup(){
 
   Serial.begin(9600);
 
+  // setup relay
+  pinMode(RELAY_PIN, OUTPUT); // set del pin come output
+  digitalWrite(RELAY_PIN, HIGH); // set del relay C-NO
+
   // setup LCD
   lcd.init(); // inizializzaione display LCD
   lcd.backlight(); // set della backlight
 
   // setup DHT11
   dht.begin(); // inizializzazione DHT11
+
+  // setup sensori di ostacoli IR
+  ir_setup();
+
+  // setup del led
+  pinMode(LED_PIN, OUTPUT);
 }
 
 void loop(){
+
+  ir_manager();
+
+  if (counter >= 1){
+    digitalWrite(LED_PIN, HIGH);
+  } else {
+    digitalWrite(LED_PIN, LOW);
+  }
 
   lcd.clear(); // clear del display
   
