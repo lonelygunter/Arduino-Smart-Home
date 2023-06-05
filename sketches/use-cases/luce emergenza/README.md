@@ -6,7 +6,7 @@
 - Relay
 - Led
   - led
-  - resistenza 220
+  - resistenza 330
 - power supply
   - batteria 9V
   - adattatore clip-pin
