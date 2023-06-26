@@ -1,24 +1,28 @@
-#define OBSTACLE_IR_1 5 // pin del primo sensore di ostacoli IR
-#define OBSTACLE_IR_2 6 // pin del decondo sensore di ostacoli IR
-
 bool direct = false; // se LOW da giù a su, se HIGH da su a giù
 bool flag = false;
 bool debounce = false;
+int counter = 0;
 
 void ir_setup() {
 
   Serial.begin(9600);
 
+  // setup del led
+  pinMode(LED_PIN, OUTPUT);
+
+  // setup dei sensori IR
   pinMode(OBSTACLE_IR_1, INPUT);
   pinMode(OBSTACLE_IR_2, INPUT);
 }
 
 void ir_manager(){
 
+  Serial.println(digitalRead(OBSTACLE_IR_1));
+  Serial.println(digitalRead(OBSTACLE_IR_2));
+
   if (digitalRead(OBSTACLE_IR_1) == LOW || digitalRead(OBSTACLE_IR_2) == LOW){
 
-    Serial.println("ho trovato qualcosa");
-    delay(20);
+    Serial.println("✅");
 
     if(digitalRead(OBSTACLE_IR_1) == LOW){
       debounce = true;
@@ -34,7 +38,7 @@ void ir_manager(){
 
       while (flag){
         while (digitalRead(OBSTACLE_IR_2) == HIGH);
-        delay(20);
+        delay(5);
         if (digitalRead(OBSTACLE_IR_2) == LOW){
           flag=false;
           if (counter > 0){
@@ -50,7 +54,7 @@ void ir_manager(){
 
       while (flag){
         while (digitalRead(OBSTACLE_IR_1) == HIGH);
-        delay(20);
+        delay(5);
         if(digitalRead(OBSTACLE_IR_1) == LOW){
           flag=false;
           counter++;
@@ -58,13 +62,19 @@ void ir_manager(){
       }
     }
 
-    if(debounce){
-      delay(1000);
-    }
+    // if(debounce){
+    //   delay(1000);
+    // }
     
     debounce = false;
       
   }
+  
+  if (counter >= 1){
+    digitalWrite(LED_PIN, HIGH);
+  } else {
+    digitalWrite(LED_PIN, LOW);
+  }
 
-  Serial.println((String) "👥 " + counter);
+  Serial.println((String) "\n👥 " + counter);
 }
