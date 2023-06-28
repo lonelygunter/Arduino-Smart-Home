@@ -26,6 +26,7 @@ int switchState = LOW; // stato del sensore
 bool buttonPressed = false;
 float humidity = 0;
 float temperature = 0;
+bool lcdtempprint = false;
 
 // METODI:
 void visualizeTemp(void); // metodo per far visualizzare i valori di temperature ed umidità sullo screen lcd
@@ -53,6 +54,10 @@ void setup() {
 void loop() {
 
   while (buttonPressed) {
+    if (lcdtempprint){
+      lcd.clear();
+    }
+    lcdtempprint = false;
     Serial.println("PASSWORD...");
     psw_manager();
   }
@@ -83,7 +88,8 @@ void visualizeTemp(void){
   lcd.print("hum: " + String(humidity));
   lcd.setCursor(0, 1);
   lcd.print("temp: " + String(temperature));
-} 
+  lcdtempprint = true;
+}
 
 // metodo per leggere la temperatura inviata dallo slave
 void receiveTemp(int bytes) {
