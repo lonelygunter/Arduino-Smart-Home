@@ -2,6 +2,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <Wire.h>
 
 #define RELAY_PIN 6 // pin del relay
 #define DS_PIN 4 // pin del DS18B20
@@ -34,11 +35,12 @@ bool sensorActivated = false; // boolean per capire se il senore è stato trigge
 // METODI:
 void irInterrupt(void); // metodo per sapere se l'interrupt è stato triggerato
 void makeMeasures(void); // metodo per prendere dei dati
-void print_humidity(float humidity); // metodo per il print dell'umidità sul display LCD
-void print_temperature(float temperature); // metodo per il print della temperatura sul display LCD
+void sendTemperatures(float temperature); // metodo per l'invio della temperatura sull bus I2C
 
 
 void setup(){
+
+  Wire.begin(); // inizializza nel bus i2c con address 8
 
   Serial.begin(9600);
 
@@ -75,8 +77,8 @@ void loop(){
   
   makeMeasures(); // prendere le misure tramite i sensori
 
-  print_humidity(humidity);
-  print_temperature(temperature);
+  delay(5000);
+  sendTemperatures();
 
   Serial.println((String)"\n💧 Humidity: " + humidity + " %");
   Serial.println((String)"🌡 Temperature: " + temperature + " C");
@@ -98,34 +100,21 @@ void makeMeasures(void){
   temperature = sensors.getTempCByIndex(0); // soricizzazione della temperatura con DS18B20
 }
 
-// metodo per il print dell'umidità sul display LCD
-void print_humidity(float humidity){
-  if(humidity < HUM_MIN || humidity > HUM_MAX){    
-    lcd.setCursor(1, 0);
-    lcd.print("! Hum: ");
-    lcd.print(humidity);
-    lcd.print(" %");
-  } else {
-    lcd.setCursor(1, 0); // sposto il cursore su (1, 0)
-    lcd.print("Hum: "); // stampo sul display l'umidità corrente
-    lcd.print(humidity);
-    lcd.print(" %");
-  }
-}
+// metodo per l'invio della temperatura sull bus I2C
+void sendTemperatures(void){
+  // pack the two floats into a byte array
+  byte byteArray[sizeof(float) * 2];
+  memcpy(&byteArray[0], &humidity, sizeof(float));
+  memcpy(&byteArray[sizeof(float)], &temperature, sizeof(float));
 
-// metodo per il print della temperatura sul display LCD
-void print_temperature(float temperature){
-  if(temperature < TEM_MIN || temperature > TEM_MAX){
-    lcd.setCursor(1, 1); // sposto il cursore su (1, 1)
-    lcd.print("! Tem: "); // stampo sul display la temperatura corrente
-    lcd.print(temperature);
-    lcd.print((char)223);
-    lcd.print(" C");
-  } else {
-    lcd.setCursor(1, 1);
-    lcd.print("Tem: ");
-    lcd.print(temperature);
-    lcd.print((char)223);
-    lcd.print(" C");
-  }
+  Wire.beginTransmission(8); // transmit to slave device with address 8
+  Wire.write(byteArray, sizeof(byteArray)); // send the byte array
+  Wire.endTransmission(); // stop transmitting
+
+  Serial.print("Sent numbers: ");
+  Serial.print(humidity);
+  Serial.print(", ");
+  Serial.println(temperature);
+
+  delay(1000); // wait for a second before sending the next numbers
 }

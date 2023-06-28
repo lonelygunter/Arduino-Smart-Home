@@ -1,4 +1,5 @@
 #include <LiquidCrystal_I2C.h>
+#include <Wire.h>
 
 #define MIC_PIN 2 // pin del sensore con microfono
 #define SWITCHPIN 6 // pin di controllo del tilt ball switch
@@ -16,14 +17,19 @@
 
 
 // VARIABILI:
+LiquidCrystal_I2C lcd(0x27, LCD_MAX_X, LCD_MAX_Y); // display LCD I2C con 16 colonne and 2 righe
 int reedState = LOW; // stato dell'ampollina reed (LOW=porta chiusa, HIGH=porta aperta)
 int alarmState = LOW; // stato dell'allarme (LOW=spento, HIGH=attivo)
 int continuedAlarm = LOW; // stato dell'allarme continuato
 int sounds = LOW; // indica se è stato rivelato un suono
 int switchState = LOW; // stato del sensore
 bool buttonPressed = false;
+float humidity = 0;
+float temperature = 0;
 
 // METODI:
+void visualizeTemp(void); // metodo per far visualizzare i valori di temperature ed umidità sullo screen lcd
+void receiveTemp(int bytes); // metodo per leggere la temperatura inviata dallo slave
 void sound_check(void); // metodo per identificare la cattura di un suono nell'ambiente
 void check_alarm_state(void); // metodo per verificare lo stato dell'allarme
 void activate_alarm_if(void); // metdo per verificare se l'allarme debba scattare
@@ -47,6 +53,7 @@ void setup() {
 void loop() {
 
   while (buttonPressed) {
+    Serial.println("PASSWORD...");
     psw_manager();
   }
 
@@ -60,6 +67,8 @@ void loop() {
   activate_alarm_if(); // verificare se l'allarme debba scattare
 
   verbose(); // stampare sul serial monitor lo stato dei sensori
+
+  visualizeTemp();
   
   continued_alarm(); // far continare l'allarme anche se i sensori sono tornati a riposo
   
@@ -67,6 +76,33 @@ void loop() {
 
 
 // METODI CUSTOM:
+
+// metodo per far visualizzare i valori di temperature ed umidità sullo screen lcd
+void visualizeTemp(void){
+  lcd.setCursor(0, 0);
+  lcd.print("hum: " + String(humidity));
+  lcd.setCursor(0, 1);
+  lcd.print("temp: " + String(temperature));
+} 
+
+// metodo per leggere la temperatura inviata dallo slave
+void receiveTemp(int bytes) {
+  if (bytes == sizeof(float) * 2) {
+    byte receivedBytes[sizeof(float) * 2];
+
+    int i = 0;
+    while (Wire.available()) {
+      receivedBytes[i] = Wire.read(); // read the byte array from the master
+      i++;
+    }
+
+    // unpack the byte array back into the two floats
+    memcpy(&humidity, &receivedBytes[0], sizeof(float));
+    memcpy(&temperature, &receivedBytes[sizeof(float)], sizeof(float));
+  } else {
+    Serial.println("Invalid data size received"); // handle the case when data of an unexpected size is received
+  }
+}
 
 // metodo per identificare la cattura di un suono nell'ambiente
 void sound_check(void){ sounds = HIGH; }
