@@ -77,7 +77,7 @@ void loop(){
   
   makeMeasures(); // prendere le misure tramite i sensori
 
-  delay(5000);
+  delay(250);
   sendTemperatures();
 
   Serial.println((String)"\n💧 Humidity: " + humidity + " %");

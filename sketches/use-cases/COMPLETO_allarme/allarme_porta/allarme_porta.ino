@@ -56,7 +56,9 @@ void loop() {
   while (buttonPressed) {
     if (lcdtempprint){
       lcd.clear();
+      setupLcd();
     }
+    Wire.end();
     lcdtempprint = false;
     Serial.println("PASSWORD...");
     psw_manager();

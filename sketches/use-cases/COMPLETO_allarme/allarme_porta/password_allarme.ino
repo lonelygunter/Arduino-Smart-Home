@@ -41,7 +41,6 @@ void restartFunc(void); // metodo per resettare il codice
 void stopAlarm(void); // metodo per disabilitare l'allarme dopo aver inserito la password
 
 void psw_setup(){
-  Wire.end();
 
   Serial.begin(9600);
   // lcd.init(); // inizializzaione display LCD
@@ -59,11 +58,10 @@ void psw_manager(){
   lcd.setCursor(cursor_X, cursor_Y); // inizializzazione posizione cursore sullo schermo LCD
   lcd.createChar(0, enter); // inizializzazione del carattere custom
 
-  // setup della schermata per inserire la password
   lcd.setCursor(4, 0);
   lcd.print("Password");
   lcd.setCursor(6, 1);
-  lcd.print("0000");
+  lcd.print(inserted_psw);
   lcd.write(byte(0));
 
   // setup per iniziare a scrivere
@@ -83,6 +81,7 @@ void psw_manager(){
   
   if (y > JS_RANGE_SUP && insert == LOW){ // per passare alla cella successiva del display
 
+    
     insert = HIGH; // indico che è stato inserito un input
 
     // aggiorno la posizione di +1 a destra    
@@ -90,7 +89,10 @@ void psw_manager(){
     lcd.setCursor(current_X, cursor_Y);
 
     last_action = HIGH; // indico che l'ultima azione è stata uno spostamento
-    // Serial.println("destra");
+
+    writePsw(); // per salvare nella stringa inserted_psw la password che si sta inserendo 
+    
+    current_index = 0; // reset index
 
   } else if (x < JS_RANGE_INF && insert == LOW && current_X != enter_position){ // per selezionare il numero precedente
 
@@ -113,10 +115,7 @@ void psw_manager(){
     lcd.setCursor(current_X, cursor_Y); // per non andare avanti con il cursore
 
     last_action = LOW; // indico che l'ultima azione NON è stata uno spostamento
-    
-  }
-  
-  writePsw(); // per salvare nella stringa inserted_psw la password che si sta inserendo  
+  } 
   
   if (button == 1 && insert == LOW && current_X == enter_position){ // per dire di aver inserito la password
 
@@ -140,7 +139,7 @@ void psw_manager(){
 // METODI CUSTOM:
 
 // metodo per il setup dell'LCD
-void setupLcd(void){
+void setupLcd(){
   lcd.init(); // inizializzaione display LCD
   lcd.backlight(); // set della backlight
   lcd.setCursor(cursor_X, cursor_Y); // inizializzazione posizione cursore sullo schermo LCD
@@ -169,6 +168,8 @@ void setupFrontEnd(void){
 void writePsw(void){
   if (last_action == HIGH) {
     inserted_psw[current_X-cursor_X-1] = psw_chars[current_index];
+    Serial.println(inserted_psw);
+    Serial.println(current_index);
   }
 }
 
@@ -180,9 +181,9 @@ void checkPsw(void){
     delay(1000);
     disableAlarm++; // ciclo di allarme impostato
     buttonPressed = false; // per dire di aver finito con di usare il joystick
+    restartFunc(); // restart del codice
     Wire.begin(8); // inizializza nel bus i2c con address 8
     Wire.onReceive(receiveTemp); // register event
-    restartFunc(); // restart del codice
     lcd.clear();
   } else {
     lcd.print("WRONG"); // password sbagliata
@@ -221,6 +222,7 @@ void frameRange(void){
 // metodo per resettare il codice
 void restartFunc(void){
   inserted_psw = "0000";
+  current_index = 0;
   current_X = cursor_X;
   setupLcd();
 }
