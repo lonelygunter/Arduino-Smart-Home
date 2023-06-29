@@ -3,6 +3,9 @@ bool flag = false;
 bool debounce = false;
 int counter = 0;
 
+// METODI:
+void checkRoom(void); // metodo per controllare se è entrata o uscita una persona dalla stanza
+
 void ir_setup() {
 
   Serial.begin(9600);
@@ -20,6 +23,15 @@ void ir_manager(){
   Serial.println(digitalRead(OBSTACLE_IR_1));
   Serial.println(digitalRead(OBSTACLE_IR_2));
 
+
+  checkRoom();
+}
+
+
+// METODI CUSTOM:
+
+// metodo per controllare se è entrata o uscita una persona dalla stanza
+void checkRoom(void){
   if (digitalRead(OBSTACLE_IR_1) == LOW || digitalRead(OBSTACLE_IR_2) == LOW){
 
     Serial.println("✅");
@@ -61,15 +73,16 @@ void ir_manager(){
         }
       }
     }
-
-    // if(debounce){
-    //   delay(1000);
-    // }
     
     debounce = false;
       
   }
-  
+
+  checkPeople();
+}
+
+// metodo per storicizzare quante persone sono presenti nella stanza
+void checkPeople(void){
   if (counter >= 1){
     digitalWrite(LED_PIN, HIGH);
   } else {

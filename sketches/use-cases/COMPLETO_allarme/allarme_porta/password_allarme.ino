@@ -1,5 +1,3 @@
-#include <Wire.h>
-
 // VARIABILI:
 
 // inizializzazione posizione del cursore
@@ -30,6 +28,7 @@ byte enter[8] = { // array del tasto enter
 };
 
 // METODI
+void checkAlarm(void); // metodo per effettuare un check dell'allarme
 void setupLcd(void); // metodo per il setup dell'LCD
 void setupFrontEnd(void); // metodo per il setup del front end
 void writePsw(void); // metodo per salvare nella stringa inserted_psw la password che si sta inserendo
@@ -69,18 +68,29 @@ void psw_manager(){
   
   lcd.cursor();
   
-  // check alarm
-  if (continuedAlarm == HIGH){
-    tone(BUZZER_PIN, 400, 500); // allarme continua a suonare dopo essere stato attivato una prima volta
-    Serial.println("🚨 ALLARME");
-  }
-
+  checkAlarm();
+  
   int x = analogRead(JS_X); // lettura dell'asse X del joystick
   int y = analogRead(JS_Y); // lettura dell'asse Y del joystick
-  int button = !digitalRead(JS_BUTTON); // lettura del pulsante del joystick
-  
-  if (y > JS_RANGE_SUP && insert == LOW){ // per passare alla cella successiva del display
+  checkJoystick(x, y);
 
+  inputOnClick(x, y); // per indicare che ho preso l'input e da qui in poi può prenderne altri   
+  
+  continuosArray(); // per iterare sempre i valori sull'array
+
+  frameRange(); // per non far oltrepassare un custom frame nel display
+
+  stopAlarm(); // per disabilitare l'allarme al prossimo inserimento della password
+}
+
+
+// METODI CUSTOM:
+
+// metodo per controllare gli input dal joystick
+void checkJoystick(int x, int y){
+  int button = !digitalRead(JS_BUTTON); // lettura del pulsante del joystick
+
+  if (y > JS_RANGE_SUP && insert == LOW){ // per passare alla cella successiva del display
     
     insert = HIGH; // indico che è stato inserito un input
 
@@ -125,18 +135,15 @@ void psw_manager(){
 
     checkPsw(); // verifica che la password inserita sia giusta
   }
-
-  inputOnClick(x, y); // per indicare che ho preso l'input e da qui in poi può prenderne altri   
-  
-  continuosArray(); // per iterare sempre i valori sull'array
-
-  frameRange(); // per non far oltrepassare un custom frame nel display
-
-  stopAlarm(); // per disabilitare l'allarme al prossimo inserimento della password
 }
 
-
-// METODI CUSTOM:
+// metodo per effettuare un check dell'allarme
+void checkAlarm(void){
+  if (continuedAlarm == HIGH){
+    tone(BUZZER_PIN, 400, 500); // allarme continua a suonare dopo essere stato attivato una prima volta
+    Serial.println("🚨 ALLARME");
+  }
+}
 
 // metodo per il setup dell'LCD
 void setupLcd(){
@@ -192,6 +199,7 @@ void checkPsw(void){
     Wire.begin(8); // inizializza nel bus i2c con address 8
     Wire.onReceive(receiveTemp); // register event
     restartFunc(); // restart del codice
+    lcd.clear();
   }
 }
 

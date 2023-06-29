@@ -1,5 +1,4 @@
 #include "DHT.h"
-#include <LiquidCrystal_I2C.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <Wire.h>
@@ -15,9 +14,6 @@
 #define TEM_MIN 30 // valore minimo di temperatura
 #define TEM_MAX 60 // valore massimo di temperatura
 
-#define LCD_COL 16 // # colonne LCD I2C
-#define LCD_ROW 2 // # righe LCD I2C
-
 #define OBSTACLE_IR_1 2 // pin del primo sensore di ostacoli IR
 #define OBSTACLE_IR_2 3 // pin del decondo sensore di ostacoli IR
 #define LED_PIN 7 // pin del led
@@ -26,7 +22,6 @@
 // VARIABILI:
 float humidity;
 float temperature;
-LiquidCrystal_I2C lcd(0x27, LCD_COL, LCD_ROW); // display LCD I2C con 16 colonne and 2 righe
 DHT dht(DHT_PIN, DHT_TYPE); // sensore DHT11 per l'umidità
 OneWire oneWire(DS_PIN); // protocollo 1-Wire
 DallasTemperature sensors(&oneWire); // sensore DS18B20
@@ -48,10 +43,6 @@ void setup(){
   pinMode(RELAY_PIN, OUTPUT); // set del pin come output
   digitalWrite(RELAY_PIN, HIGH); // set del relay C-NO
 
-  // setup LCD
-  lcd.init(); // inizializzaione display LCD
-  lcd.backlight(); // set della backlight
-
   // setup DHT11
   dht.begin(); // inizializzazione DHT11
 
@@ -72,8 +63,6 @@ void loop(){
     ir_manager();
     sensorActivated = false; // reset flag
   }
-
-  lcd.clear(); // clear del display
   
   makeMeasures(); // prendere le misure tramite i sensori
 
